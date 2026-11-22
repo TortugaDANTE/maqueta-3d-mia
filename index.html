@@ -1,5 +1,4 @@
-<!doctype html>
-<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Maqueta 3D · MIA Global Consulting</title>
 <script type="module">
 import {ModelViewerElement} from "https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js";
@@ -7,13 +6,38 @@ ModelViewerElement.meshoptDecoderLocation="https://cdn.jsdelivr.net/npm/meshopti
 </script>
 <style>
 html,body{margin:0;height:100%;font-family:system-ui,Arial,sans-serif;background:#fff;color:#1A1A1A}
-header{background:#fff;border-bottom:4px solid #F7934C;padding:10px 16px;display:flex;justify-content:space-between;align-items:center}
-h1{font-size:18px;margin:0;color:#C4570C}
-header span{font-size:13px}
-model-viewer{width:100%;height:calc(100% - 96px);background:#FDEEE2;--poster-color:#FDEEE2}
-footer{height:38px;display:flex;align-items:center;justify-content:center;font-size:12px;background:#fff;border-top:1px solid #F7934C}
+header{border-bottom:4px solid #F7934C;padding:8px 12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+h1{font-size:16px;margin:0 8px 0 0;color:#C4570C}
+header button{border:2px solid #F7934C;background:#fff;color:#C4570C;border-radius:6px;padding:6px 12px;font-size:14px;cursor:pointer}
+header button.on{background:#F7934C;color:#fff}
+model-viewer{width:100%;height:calc(100% - 60px);background:#FDEEE2}
+.hs{display:none;background:#fff;border:2px solid #F7934C;border-radius:14px;padding:3px 9px;font-size:12px;color:#1A1A1A;cursor:pointer;white-space:nowrap;box-shadow:0 1px 4px #0003}
+.hs.ver{display:block}
 </style></head><body>
-<header><h1>Maqueta 3D del predio</h1><span>MIA Global Consulting</span></header>
-<model-viewer src="maqueta.glb" camera-controls touch-action="pan-y" auto-rotate shadow-intensity="0.6" exposure="1.1" camera-orbit="30deg 55deg auto" alt="Maqueta 3D ilustrativa"></model-viewer>
-<footer>Gira con el dedo o el ratón · Pellizca o usa la rueda para acercar · Maqueta ilustrativa, ubicaciones generales</footer>
-</body></html>
+<header><h1>Maqueta 3D</h1>
+<button id="b1" onclick="loc(1)">Locación 1</button>
+<button id="b2" onclick="loc(2)">Locación 2</button>
+<button onclick="atras()">◀ Regresar</button></header>
+<model-viewer id="mv" src="maqueta.glb" camera-controls touch-action="pan-y" shadow-intensity="0.5" exposure="1.1" interpolation-decay="120" max-camera-orbit="auto auto 6000m" alt="Maqueta 3D ilustrativa">
+<button class="hs l1" slot="hotspot-1-0" data-position="-943.3m 149.8m -227.7m" data-loc="1" onclick="ir({t:'-943.3m 144.8m -227.7m',o:'20deg 55deg 35m'})">Vivero 3</button>
+<button class="hs l1" slot="hotspot-1-1" data-position="-995.9m 147.3m -227.1m" data-loc="1" onclick="ir({t:'-995.9m 142.3m -227.1m',o:'20deg 55deg 35m'})">Nave 1</button>
+<button class="hs l1" slot="hotspot-1-2" data-position="-1004.3m 147.3m -210.5m" data-loc="1" onclick="ir({t:'-1004.3m 142.3m -210.5m',o:'20deg 55deg 35m'})">Nave 2</button>
+<button class="hs l1" slot="hotspot-1-3" data-position="-955.2m 145.3m -254.8m" data-loc="1" onclick="ir({t:'-955.2m 140.3m -254.8m',o:'20deg 55deg 35m'})">Casa de Pedro</button>
+<button class="hs l1" slot="hotspot-1-4" data-position="-952.6m 145.3m -264.9m" data-loc="1" onclick="ir({t:'-952.6m 140.3m -264.9m',o:'20deg 55deg 35m'})">Gallinero Kikiri</button>
+<button class="hs l1" slot="hotspot-1-5" data-position="-930.2m 144.7m -264.5m" data-loc="1" onclick="ir({t:'-930.2m 139.7m -264.5m',o:'20deg 55deg 35m'})">Tortugario</button>
+<button class="hs l2" slot="hotspot-2-0" data-position="-2468.2m -20.3m -2213.1m" data-loc="2" onclick="ir({t:'-2468.2m -25.3m -2213.1m',o:'20deg 55deg 35m'})">Gallinero 1</button>
+<button class="hs l2" slot="hotspot-2-1" data-position="-2472.9m -19.5m -2228.3m" data-loc="2" onclick="ir({t:'-2472.9m -24.5m -2228.3m',o:'20deg 55deg 35m'})">Gallinero 2</button>
+<button class="hs l2" slot="hotspot-2-2" data-position="-2483.9m -18.1m -2277.1m" data-loc="2" onclick="ir({t:'-2483.9m -23.1m -2277.1m',o:'20deg 55deg 35m'})">Pileta</button>
+<button class="hs l2" slot="hotspot-2-3" data-position="-2634.9m -26.0m -2463.8m" data-loc="2" onclick="ir({t:'-2634.9m -31.0m -2463.8m',o:'20deg 55deg 35m'})">Semillero</button>
+</model-viewer>
+<script>
+const L={"1": {"t": "-963.6m 141.6m -241.6m", "o": "20deg 50deg 173m"}, "2": {"t": "-2515.0m -26.0m -2295.6m", "o": "20deg 50deg 577m"}};
+const mv=document.getElementById('mv');let hist=[],actual=null;
+function aplicar(v){mv.cameraTarget=v.t;mv.cameraOrbit=v.o;}
+function ir(v){if(actual)hist.push(actual);actual=v;aplicar(v);}
+function loc(n){document.querySelectorAll('.hs').forEach(h=>h.classList.toggle('ver',h.dataset.loc==n));
+ b1.classList.toggle('on',n==1);b2.classList.toggle('on',n==2);ir(Object.assign({n},L[n]));}
+function atras(){if(!hist.length)return;actual=hist.pop();if(actual.n)loc0(actual.n);aplicar(actual);}
+function loc0(n){document.querySelectorAll('.hs').forEach(h=>h.classList.toggle('ver',h.dataset.loc==n));b1.classList.toggle('on',n==1);b2.classList.toggle('on',n==2);}
+mv.addEventListener('load',()=>loc(1));
+</script></body></html>

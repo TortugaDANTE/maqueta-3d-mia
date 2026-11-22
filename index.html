@@ -1,30 +1,205 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Maqueta 3D · MIA Global Consulting</title>
-<script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
-<style>body{margin:0;font-family:system-ui,Arial,sans-serif;background:#fff;color:#1A1A1A}
+<script type="module">
+import {ModelViewerElement} from "https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js";
+ModelViewerElement.meshoptDecoderLocation = "https://cdn.jsdelivr.net/npm/meshoptimizer@0.21.0/meshopt_decoder.js";
+</script>
+<style>
+body{margin:0;font-family:system-ui,Arial,sans-serif;background:#fff;color:#1A1A1A}
 header{border-bottom:4px solid #F7934C;padding:8px 12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 h1{font-size:16px;margin:0;color:#C4570C;flex:1}
 button{border:2px solid #F7934C;background:#fff;color:#C4570C;border-radius:6px;padding:7px 12px;font-size:14px;cursor:pointer}
 button.on{background:#F7934C;color:#fff}
 main{padding:12px;max-width:1100px;margin:auto}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
-.card{border:1px solid #F7934C;border-radius:8px;overflow:hidden;cursor:pointer}
-.card img{width:100%;height:160px;object-fit:cover;background:#FDEEE2;display:block}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:12px}
+.card{border:1px solid #F7934C;border-radius:8px;overflow:hidden;cursor:pointer;background:#fff}
+.card img, .card .ph{width:100%;height:150px;object-fit:cover;background:#FDEEE2;display:block}
+.card .ph{display:flex;align-items:center;justify-content:center;color:#C4570C;font-weight:600}
 .card div{padding:8px;font-weight:600}
-.hero{width:100%;border-radius:8px;margin-bottom:12px}
-model-viewer{width:100%;height:60vh;background:#FDEEE2;border-radius:8px}
-.lam{width:100%;border-radius:8px}
-.tabs{display:flex;gap:8px;margin:10px 0}</style></head><body>
-<header><h1 id="tit">Maqueta 3D</h1><button id="b1" onclick="loc('1')">Locación 1</button><button id="b2" onclick="loc('2')">Locación 2</button><button onclick="atras()">◀ Regresar</button></header>
+model-viewer{width:100%;height:58vh;min-height:280px;background:#FDEEE2;border-radius:8px}
+.lam{width:100%;border-radius:8px;margin-top:12px;background:#FDEEE2}
+.tabs{display:flex;gap:8px;margin:10px 0;flex-wrap:wrap}
+.hs{display:none;background:#fff;border:2px solid #F7934C;border-radius:14px;padding:3px 9px;font-size:12px;color:#1A1A1A;cursor:pointer;white-space:nowrap;box-shadow:0 1px 4px #0003}
+.hs.ver{display:block}
+button[slot="ar-button"]{background:#F7934C;color:#fff;border:0;border-radius:8px;padding:10px 14px;font-size:15px;position:absolute;bottom:12px;left:12px}
+p.nota{font-size:13px;color:#444;margin:8px 0 0}
+</style>
+</head>
+<body>
+<header>
+  <h1 id="tit">Maqueta 3D</h1>
+  <button id="b1" type="button">Locación 1</button>
+  <button id="b2" type="button">Locación 2</button>
+  <button id="batr" type="button">◀ Regresar</button>
+</header>
 <main id="m"></main>
-<script>const P={"1": [["poi04_casa_pedro", "Casa de Pedro"], ["poi05_familia_kikiri", "Gallinero Kikiri"], ["poi06_tortugario", "Tortugario"], ["poi07_invernadero_nave1", "Nave 1"], ["poi08_invernadero_nave2", "Nave 2"], ["poi10_vivero3", "Vivero 3"]], "2": [["poi01_gallinero1", "Gallinero 1"], ["poi02_gallinero2", "Gallinero 2"], ["poi03_semillero", "Semillero"], ["poi09_pileta_piscicultura", "Pileta"]]};
-const m=document.getElementById('m');let hist=[],cur=null;
-function go(s,push=true){if(push&&cur)hist.push(cur);cur=s;render();}
-function atras(){if(hist.length){cur=hist.pop();render();}}
-function loc(n){go({v:'loc',n});}
-function tab(t){cur=Object.assign({},cur,{t});render();}
-function render(){const s=cur;b1.classList.toggle('on',s.n=='1');b2.classList.toggle('on',s.n=='2');
- if(s.v=='inicio'){tit.textContent='Maqueta 3D';m.innerHTML='<div class="grid">'+['1','2'].map(n=>`<div class="card" onclick="loc('${n}')"><img src="img/loc${n}.jpg"><div>Locación ${n} · ${P[n].length} lugares</div></div>`).join('')+'</div>';}
- else if(s.v=='loc'){tit.textContent='Locación '+s.n;m.innerHTML=`<img class="hero" src="img/loc${s.n}.jpg"><div class="grid">`+P[s.n].map(([id,nom])=>`<div class="card" onclick="go({v:'lugar',n:'${s.n}',id:'${id}',nom:'${nom}'})"><img src="img/${id}_iso_preview.jpg"><div>${nom}</div></div>`).join('')+'</div>';}
- else{tit.textContent=s.nom;const t=s.t||'3d';m.innerHTML=`<div class="tabs"><button class="${t=='3d'?'on':''}" onclick="tab('3d')">Modelo 3D</button><button class="${t=='il'?'on':''}" onclick="tab('il')">Ilustración</button></div>`+(t=='3d'?`<model-viewer src="mod/${s.id}_preview.glb" camera-controls auto-rotate shadow-intensity="0.6" touch-action="pan-y" alt="${s.nom}"></model-viewer>`:`<img class="lam" src="img/${s.id}_iso_preview.jpg">`);}}
-go({v:'inicio'},false);</script></body></html>
+<script>
+const LUGARES = {
+  "1": [
+    ["poi04_casa_pedro", "Casa de Pedro"],
+    ["poi05_familia_kikiri", "Gallinero Kikiri"],
+    ["poi06_tortugario", "Tortugario"],
+    ["poi07_invernadero_nave1", "Nave 1"],
+    ["poi08_invernadero_nave2", "Nave 2"],
+    ["poi10_vivero3", "Vivero 3"],
+    ["estacion_agua", "Estación de agua"]
+  ],
+  "2": [
+    ["poi01_gallinero1", "Gallinero 1"],
+    ["poi02_gallinero2", "Gallinero 2"],
+    ["poi03_semillero", "Semillero"],
+    ["poi09_pileta_piscicultura", "Pileta"]
+  ]
+};
+const CAM = {
+  "0": {t: "-1739m 58m -1269m", o: "25deg 40deg 2800m"},
+  "1": {t: "-970m 150m -200m", o: "25deg 50deg 260m"},
+  "2": {t: "-2515.0m -26.0m -2295.6m", o: "20deg 50deg 577m"}
+};
+const HS = [
+  {loc:"1", id:"poi10_vivero3", nom:"Vivero 3", p:"-943.3m 149.8m -227.7m", t:"-943.3m 144.8m -227.7m", o:"20deg 55deg 35m"},
+  {loc:"1", id:"poi07_invernadero_nave1", nom:"Nave 1", p:"-995.9m 147.3m -227.1m", t:"-995.9m 142.3m -227.1m", o:"20deg 55deg 35m"},
+  {loc:"1", id:"poi08_invernadero_nave2", nom:"Nave 2", p:"-1004.3m 147.3m -210.5m", t:"-1004.3m 142.3m -210.5m", o:"20deg 55deg 35m"},
+  {loc:"1", id:"poi04_casa_pedro", nom:"Casa de Pedro", p:"-955.2m 145.3m -254.8m", t:"-955.2m 140.3m -254.8m", o:"20deg 55deg 35m"},
+  {loc:"1", id:"poi05_familia_kikiri", nom:"Gallinero Kikiri", p:"-952.6m 145.3m -264.9m", t:"-952.6m 140.3m -264.9m", o:"20deg 55deg 35m"},
+  {loc:"1", id:"poi06_tortugario", nom:"Tortugario", p:"-930.2m 144.7m -264.5m", t:"-930.2m 139.7m -264.5m", o:"20deg 55deg 35m"},
+  {loc:"1", id:"estacion_agua", nom:"Estación de agua", p:"-976.2m 168.7m -102.2m", t:"-976.2m 163.9m -102.2m", o:"20deg 55deg 40m"},
+  {loc:"2", id:"poi01_gallinero1", nom:"Gallinero 1", p:"-2468.2m -20.3m -2213.1m", t:"-2468.2m -25.3m -2213.1m", o:"20deg 55deg 35m"},
+  {loc:"2", id:"poi02_gallinero2", nom:"Gallinero 2", p:"-2472.9m -19.5m -2228.3m", t:"-2472.9m -24.5m -2228.3m", o:"20deg 55deg 35m"},
+  {loc:"2", id:"poi09_pileta_piscicultura", nom:"Pileta", p:"-2483.9m -18.1m -2277.1m", t:"-2483.9m -23.1m -2277.1m", o:"20deg 55deg 35m"},
+  {loc:"2", id:"poi03_semillero", nom:"Semillero", p:"-2634.9m -26.0m -2463.8m", t:"-2634.9m -31.0m -2463.8m", o:"20deg 55deg 35m"}
+];
+const AR = 'ar ar-modes="webxr scene-viewer quick-look" ar-placement="floor"';
+const ARBTN = '<button slot="ar-button" type="button">Ver en mi espacio</button>';
+const m = document.getElementById('m');
+const tit = document.getElementById('tit');
+const b1 = document.getElementById('b1');
+const b2 = document.getElementById('b2');
+
+function hashDe(s){
+  if(!s || s.v==='inicio') return '#/';
+  if(s.v==='loc') return '#/loc/'+s.n;
+  if(s.v==='lugar') return '#/lugar/'+s.id;
+  return '#/';
+}
+function deHash(){
+  const h = (location.hash||'#/').replace(/^#/, '');
+  const p = h.split('/').filter(Boolean);
+  if(p[0]==='loc' && (p[1]==='1'||p[1]==='2')) return {v:'loc', n:p[1]};
+  if(p[0]==='lugar' && p[1]){
+    for(const n of ['1','2']){
+      const hit = LUGARES[n].find(x=>x[0]===p[1]);
+      if(hit) return {v:'lugar', n, id:hit[0], nom:hit[1], t: '3d'};
+    }
+  }
+  return {v:'inicio'};
+}
+function go(s, push){
+  const url = hashDe(s);
+  if(push!==false) history.pushState(s, '', url);
+  else history.replaceState(s, '', url);
+  render(s);
+}
+function atras(){
+  if(history.state && (history.length>1)){ history.back(); return; }
+  const s = history.state || deHash();
+  if(s.v==='lugar') go({v:'loc', n:s.n}, false);
+  else if(s.v==='loc') go({v:'inicio'}, false);
+}
+function visorMaqueta(filtroLoc){
+  const cam = CAM[filtroLoc || '0'];
+  const hs = (filtroLoc?HS.filter(h => h.loc===filtroLoc):[]).map(h=>
+    `<button class="hs ver" slot="hotspot-${h.id}" data-position="${h.p}" type="button" data-id="${h.id}">${h.nom}</button>`
+  ).join('');
+  return `<model-viewer id="mv" src="maqueta.glb" camera-controls touch-action="pan-y" shadow-intensity="0.5" exposure="1.1" interpolation-decay="120" min-camera-orbit="auto auto 10m" max-camera-orbit="auto auto 8000m" camera-target="${cam.t}" camera-orbit="${cam.o}" ${AR} alt="Maqueta 3D ilustrativa">${hs}${ARBTN}</model-viewer>`;
+}
+function imgSrc(id){
+  if(id==='loc1'||id==='loc2') return 'img/'+id+'.jpg';
+  if(id==='estacion_agua') return null;
+  return 'img/'+id+'_iso_preview.jpg';
+}
+function imgCard(id, nom, attr){
+  const src=imgSrc(id);
+  const cuerpo=src?`<img src="${src}" alt="${nom}">`:`<div class="ph">3D</div>`;
+  return `<div class="card" ${attr}>${cuerpo}<div>${nom}</div></div>`;
+}
+
+function render(s){
+  s = s || deHash();
+  b1.classList.toggle('on', s.n==='1');
+  b2.classList.toggle('on', s.n==='2');
+  if(s.v==='inicio'){
+    tit.textContent = 'Maqueta 3D';
+    m.innerHTML = visorMaqueta(null)
+      + '<p class="nota">Elige una locación para ver sus lugares. En el celular puedes pulsar «Ver en mi espacio» para colocar el modelo en el piso o la mesa (sin imagen ancla). En iPhone la RA aún no está disponible.</p>'
+      + '<div class="grid">'
+      + imgCard('loc1','Locación 1 · 7 lugares', 'data-loc="1"')
+      + imgCard('loc2','Locación 2 · 4 lugares', 'data-loc="2"')
+      + imgCard('estacion_agua','Estación de agua', 'data-lugar="estacion_agua"')
+      + '</div>';
+  } else if(s.v==='loc'){
+    tit.textContent = 'Locación '+s.n;
+    m.innerHTML = visorMaqueta(s.n)
+      + '<p class="nota">Pulsa un letrero o una tarjeta para abrir el modelo 3D del lugar.</p>'
+      + '<div class="grid">'
+      + LUGARES[s.n].map(([id,nom])=>imgCard(id,nom, `data-lugar="${id}"`)).join('')
+      + '</div>';
+  } else {
+    tit.textContent = s.nom;
+    const t = s.t || '3d';
+    const hayIlus = s.id !== 'estacion_agua';
+    const tabs = `<div class="tabs">
+      <button type="button" class="${t==='3d'?'on':''}" data-tab="3d">Modelo 3D</button>
+      ${hayIlus?`<button type="button" class="${t==='il'?'on':''}" data-tab="il">Ilustración</button>`:''}
+    </div>`;
+    const cuerpo = t==='il' && hayIlus
+      ? `<img class="lam" src="img/${s.id}_iso_preview.jpg" alt="${s.nom}">`
+      : `<model-viewer src="mod/${s.id}_preview.glb" camera-controls auto-rotate shadow-intensity="0.6" touch-action="pan-y" ${AR} alt="${s.nom}">${ARBTN}</model-viewer>`;
+    m.innerHTML = tabs + cuerpo;
+  }
+  // events
+  m.querySelectorAll('[data-loc]').forEach(el=>el.addEventListener('click',()=>go({v:'loc',n:el.dataset.loc})));
+  m.querySelectorAll('[data-lugar]').forEach(el=>el.addEventListener('click',()=>{
+    const id=el.dataset.lugar;
+    let n=s.n, nom=el.textContent.trim();
+    for(const k of ['1','2']){
+      const hit=LUGARES[k].find(x=>x[0]===id);
+      if(hit){ n=k; nom=hit[1]; }
+    }
+    go({v:'lugar', n, id, nom, t:'3d'});
+  }));
+  m.querySelectorAll('[data-tab]').forEach(el=>el.addEventListener('click',()=>{
+    const ns=Object.assign({}, s, {t:el.dataset.tab});
+    history.replaceState(ns, '', hashDe(ns));
+    render(ns);
+  }));
+  const mv=document.getElementById('mv');
+  if(mv){
+    const cam=CAM[(s.v==='loc'?s.n:'0')];
+    const aplicar=()=>{mv.cameraTarget=cam.t;mv.cameraOrbit=cam.o;if(mv.jumpCameraToGoal)mv.jumpCameraToGoal();};
+    if(mv.loaded)aplicar(); else mv.addEventListener('load',aplicar,{once:true});
+    m.querySelectorAll('button.hs').forEach(btn=>{
+      btn.addEventListener('click', ev=>{
+        ev.stopPropagation();
+        const id=btn.dataset.id;
+        const h=HS.find(x=>x.id===id);
+        if(!h) return;
+        mv.cameraTarget=h.t; mv.cameraOrbit=h.o;
+        go({v:'lugar', n:h.loc, id:h.id, nom:h.nom, t:'3d'});
+      });
+    });
+  }
+}
+
+b1.addEventListener('click', ()=>go({v:'loc',n:'1'}));
+b2.addEventListener('click', ()=>go({v:'loc',n:'2'}));
+document.getElementById('batr').addEventListener('click', atras);
+window.addEventListener('popstate', ev=>render(ev.state || deHash()));
+go(deHash(), false);
+</script>
+</body>
+</html>
